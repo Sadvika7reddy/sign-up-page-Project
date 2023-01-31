@@ -5,6 +5,7 @@ import classes from './AuthForm.module.css';
 const AuthForm = () => {
   const emailInputRef=useRef();
   const passwordInputRef=useRef();
+  const [isloading,setIsLoading]=useState(false);
   const [isLogin, setIsLogin] = useState(true);
 
   const switchAuthModeHandler = () => {
@@ -14,6 +15,7 @@ const AuthForm = () => {
     event.preventDefault();
     const enteredEmail=emailInputRef.current.value;
     const enteredPassword=passwordInputRef.current.value;
+    setIsLoading(true);
     if(isLogin){
 
     }
@@ -29,12 +31,18 @@ const AuthForm = () => {
         ),
         headers :{
           'Content-Type':'application/json'
-
         }
       }
       ).then(res=>{
+        setIsLoading(false);
         if(res.ok){
 
+        }
+        else{
+          return res.json().then((dara)=>{
+            let errorMessage='Authenticated Failed';
+            alert(errorMessage);
+          })
         }
       })
     }
@@ -54,7 +62,8 @@ const AuthForm = () => {
           <input type='password' id='password' required ref={passwordInputRef}/>
         </div>
         <div className={classes.actions}>
-          <button>{isLogin ? 'Login' : 'Create Account'}</button>
+          {!isloading&&<button>{isLogin ? 'Login' : 'Create Account'}</button>}
+          {isloading&&<p>sending request...</p>}
           <button
             type='button'
             className={classes.toggle}
